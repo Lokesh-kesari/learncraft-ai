@@ -146,6 +146,32 @@ Let the user choose the final output format based on the mode selected in Step 1
 
 Step 3 may also include guided narrowing controls when LearnCraft AI detects broad, ambiguous, or multi-topic input. These controls are part of Step 3 and do not create a fourth step.
 
+### Learning Objective
+
+Learning Objective is selected inside Step 3. It does not create a new workflow step and should appear alongside the output format and any required guided narrowing controls.
+
+Options:
+
+- Learn
+- Teach
+- Implement
+- Interview
+- Explore
+
+| Objective | Generation Behavior |
+| --- | --- |
+| Learn | Prioritizes structured understanding, essential concepts, examples, and recall-friendly explanations |
+| Teach | Prioritizes teaching sequence, clear explanations, examples, speaker-friendly flow, and audience-ready framing |
+| Implement | Prioritizes practical workflows, setup guidance, real-world usage patterns, common mistakes, and hands-on application |
+| Interview | Prioritizes high-frequency concepts, common misconceptions, concise explanations, and likely interview questions |
+| Explore | Prioritizes conceptual understanding, deeper connections, and related ideas where appropriate |
+
+Rules:
+
+- Exactly one Learning Objective must be selected.
+- Learning Objective influences generation behavior but does not change the selected mode.
+- Learning Objective must be applied after scope detection and file processing so the generated content matches both the selected focus and user intent.
+
 ### Lecture-Ready Presentation Pack Options
 
 - Slides Only
@@ -170,7 +196,20 @@ Step 3 may also include guided narrowing controls when LearnCraft AI detects bro
 | Quick Learning | Prioritizes essential concepts, definitions, and fast recall |
 | Solid Understanding | Adds structured explanation, examples, and conceptual links |
 | Deep Learning | Adds deeper reasoning, edge cases, misconceptions, and layered examples |
-| Implementation Ready | Adds practical steps, applied examples, checklists, and implementation guidance |
+| Implementation Ready | Adds a practical workflow, setup requirements, real-world usage patterns, common mistakes, hands-on exercise, and recommended next steps |
+
+### Implementation Ready Definition
+
+Implementation Ready outputs turn the selected concept into actionable learning material that can be applied in a real workflow.
+
+Implementation Ready outputs must include:
+
+- Practical workflow
+- Setup requirements
+- Real-world usage patterns
+- Common mistakes
+- Hands-on exercise
+- Recommended next steps
 
 ### Focused Deep Dive Options
 
@@ -184,7 +223,17 @@ Step 3 may also include guided narrowing controls when LearnCraft AI detects bro
 | Lecture Style | Explains the selected focus area as teachable lecture content |
 | Study Guide | Explains the focus area as learner-facing study material |
 | Advanced Concept Brief | Produces concise expert-level analysis of the concept |
-| Just One Topic | Restricts output to a single selected topic with no broad expansion |
+| Just One Topic | Focuses exclusively on the selected topic, avoids broad overviews, limits adjacent concepts to what is required for understanding, keeps prerequisite explanations contextual and minimal, and optimizes for depth over breadth |
+
+### Just One Topic Rules
+
+When Just One Topic is selected:
+
+- Focus exclusively on the selected topic.
+- Do not expand into adjacent concepts unless required for understanding.
+- Do not generate broad overviews.
+- Keep prerequisite explanations contextual and minimal.
+- Optimize for depth rather than breadth.
 
 ### Dynamic Output Flow
 
@@ -194,19 +243,21 @@ flowchart TD
     B -->|Lecture| C[Show lecture output options]
     B -->|Study Guide| D[Show study guide depth options]
     B -->|Focused Deep Dive| E[Show deep dive format options]
-    C --> F{Scope refinement needed?}
+    C --> F[Show learning objective options]
     D --> F
     E --> F
-    F -->|Yes| G[Show guided narrowing choices]
-    F -->|No| H[Enable Generate]
-    G --> H
-    H --> I[Generate selected output]
+    F --> G{Scope refinement needed?}
+    G -->|Yes| H[Show guided narrowing choices]
+    G -->|No| I[Enable Generate]
+    H --> I
+    I --> J[Generate selected output]
 ```
 
 ### Rules
 
 - Output options depend only on the selected mode.
 - Exactly one output option must be selected.
+- Exactly one Learning Objective must be selected inside Step 3.
 - If scope narrowing is required, the Generate button remains disabled until a valid scope choice is selected.
 - Previous mode and input selections remain available through the Back button.
 
@@ -320,6 +371,24 @@ User options:
 - Create a structured sequence from all concepts
 - Prioritize concepts most relevant to the selected mode
 
+### Concept Ranking
+
+When multiple concepts are extracted from a file, LearnCraft AI ranks concepts before showing concept selection suggestions in Step 3.
+
+Ranking criteria:
+
+1. Relevance to user-entered topic
+2. Frequency within file
+3. Concept importance
+4. Dependency relationships
+
+The ranked concept list should influence:
+
+- Suggested concept order.
+- Recommended default concept selection.
+- Structured learning path sequencing.
+- Which concepts are shown as highest-priority choices in Step 3.
+
 ### File Contains One Primary Concept
 
 When a file contains one primary concept:
@@ -422,6 +491,7 @@ When the user navigates backward:
 - Entered topic text is preserved.
 - Uploaded file state is preserved.
 - Output selection is preserved when still compatible with the selected mode.
+- Learning Objective selection is preserved when still compatible with the selected output.
 - Scope refinement choices are preserved when still compatible with the updated input.
 
 ### Change Handling
@@ -432,6 +502,7 @@ When the user navigates backward:
 | User changes topic in Step 2 | Scope analysis refreshes |
 | User removes uploaded file | File-derived concept choices are removed |
 | User changes file | File processing refreshes |
+| User changes Learning Objective in Step 3 | Generation behavior updates without changing the selected mode or output format |
 | User returns to Step 3 without changing earlier inputs | Previous Step 3 choices remain selected |
 
 ### Restart Rule
@@ -492,17 +563,20 @@ Exit condition:
 User action:
 
 - Select output type.
+- Select Learning Objective.
 - Select any required scope, interpretation, concept, or alignment option.
 
 System response:
 
 - Shows output options based on selected mode.
+- Shows Learning Objective options inside Step 3.
 - Shows guided narrowing controls only when needed.
 - Enables Generate after required selections are complete.
 
 Exit condition:
 
 - Output option is selected.
+- Learning Objective is selected.
 - Required scope or file clarification selections are complete.
 
 ### Output Review Screen
@@ -534,7 +608,7 @@ flowchart TD
     G -->|Yes| H[Show refinement options in Step 3]
     G -->|No| I[Show output options]
     H --> I
-    I --> J{Output option selected?}
+    I --> J{Output option and learning objective selected?}
     J -->|No| K[Keep Generate disabled]
     K --> I
     J -->|Yes| L[Generate tailored learning content]
@@ -544,6 +618,21 @@ flowchart TD
     N -->|Start new| B
     N -->|Done| O[End]
 ```
+
+---
+
+## Learning Experience Rules
+
+LearnCraft AI optimizes for understanding, not content volume.
+
+Principles:
+
+- Avoid generic summaries.
+- Reduce cognitive overload.
+- Explain only necessary prerequisites.
+- Prioritize conceptual clarity.
+- Match content to user objective.
+- Prefer structured learning experiences over information dumps.
 
 ---
 
